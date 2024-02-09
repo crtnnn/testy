@@ -1,0 +1,466 @@
+---
+title: "Wizualizacja danych w badaniach naukowych"
+author: "KJ"
+subtitle: Projektowanie wizualizacji i wizualizacja 
+output:
+  html_document:
+    df_print: paged
+    theme: spacelab
+    highlight: zenburn
+    toc: yes
+    toc_depth: 3
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_fold: hide
+  word_document:
+    toc: yes
+    toc_depth: '3'
+  pdf_document:
+    toc: yes
+    toc_depth: '3'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Percepcja
+Percepcja to proces, w którym odbieramy, interpretujemy i przetwarzamy informacje zmysłowe, aby zrozumieć i zinterpretować świat wokół nas. W kontekście wizualizacji, percepcja odnosi się do sposobu, w jaki ludzie interpretują i rozumieją dane prezentowane za pomocą grafik, wykresów, diagramów i innych form wizualnych.
+
+
+## Zasady rządzące percepcją (Gestalt)
+
+
+Istnieją zasady percepcji, które mogą być pomocne podczas tworzenia wizualizacji, aby ułatwić odbiorcom zrozumienie przedstawionych danych. Oto niektóre z tych zasad:
+
+- Zasada podobieństwa: Elementy, które są podobne do siebie, są traktowane jako grupa lub wzorzec. To oznacza, że jeśli wizualizacja ma zawierać grupy danych, elementy w każdej grupie powinny być podobne do siebie w jakimś aspekcie, na przykład w kolorze, kształcie, wielkości lub teksturze.
+
+- Zasada kontynuacji: Odbiorcy skłonni są do przerywania linii, które się krzyżują i kontynuowania ich wzdłuż jednej ścieżki. To oznacza, że tworząc wizualizacje z liniami lub kształtami, należy unikać tworzenia niepotrzebnych przecięć, aby umożliwić płynne kontynuowanie linii.
+
+- Zasada zbliżenia: Elementy, które są blisko siebie, są postrzegane jako grupa lub jednostka. To oznacza, że jeśli wizualizacja ma zawierać wiele elementów, podobne elementy powinny być umieszczone blisko siebie, aby odbiorcy mogli łatwo zobaczyć, że są one związane.
+
+- Zasada kontrastu: Kontrasty kolorów, kształtów lub wielkości są łatwe do zauważenia i przyciągają uwagę. To oznacza, że używanie różnych kolorów, rozmiarów lub kształtów może pomóc wyróżnić ważne elementy wizualizacji.
+
+- Zasada złożoności: Odbiorcy preferują wizualizacje, które są proste i łatwe do zrozumienia. To oznacza, że wizualizacje powinny być tak zaprojektowane, aby nie zawierały zbyt wielu elementów lub nie były zbyt skomplikowane.
+
+- Zasada horyzontalności: Odbiorcy mają skłonność do przesuwania wzroku z lewej strony na prawą stronę, dlatego elementy umieszczone po lewej stronie wizualizacji powinny być mniej ważne niż te po prawej stronie.
+
+Łatwiej zobaczyć o co chodzi na rysunku
+
+![](https://themarketinganalyticsacademy.com/wp-content/uploads/sites/9/2021/05/Gestalt-Principles-1024x646.png "Zasady Gestalt")
+
+W przygotowywaniu wizualizacji wykorzystujemy też tzw. atrybuty przetwarzane mimowolnie.
+
+## Atrybuty przetwarzane mimowolnie
+Obejrzyj [ten film](https://youtu.be/l1Ym-F7gqQw)
+
+# Przygotowanie do wizualizacji danych
+
+Zakładam że rozumieją Państwo dane (chcecie przygotować wizualizację swoich danych). Jeśli nie - jest to jakiś inny zbior, należy najpierw zapoznać się z danymi i je zrozumieć.
+
+Wskazówki:
+
+- Myśl jak projektant.
+- Określ jakie masz typy danych. 
+        * Czy nie chcesz zdyskretyzować ciągłych
+        * Czy nie checsz lub pogrupować dyskretnych?
+        * Czy nie trzeba przeskalować danych?
+- Jakimi atrybutami wizualnymi dysponujesz? (zrób listę)
+- Które dane możesz zamapować na które atrybuty?
+- Co chcesz pokazać w danej wizualizacji?
+
+
+## Mapowanie danych na elementy wizualne
+Biorąc pod uwagę Gestalt i atrybuty przetwarzane mimowolnie: 
+Na co można zamapować dane ciągłe? Na co dane dyskretne. Ile klas danych mamy?
+
+
+
+## Dobór kolorów
+Przede wszystkim pytanie - czy NAPRAWDĘ potrzebujemy kolorów?
+
+Bywa że za kolorowe ilustracje trzeba zapłacić dodatkowo przy publikacji, wiec warto to rozważyć (plus problemy z czytelnością dla osób z dysfunkcjami postrzegania kolorów)
+
+Jeśli tak, to:
+ - Colorbrewer
+ - Rcolorbrewer
+ 
+```{r}
+library("RColorBrewer")
+display.brewer.all(type = "seq")
+```
+
+```{r}
+display.brewer.all(colorblindFriendly = TRUE)
+```
+
+# Wizualizacja - analiza zbioru danych
+W tej części będę pokazywać jak przygotować poszczególne, specyficzne wykresy dla zbioru `iris`, ale Państwa zadaniem NIE będzie "zmałpować" wykresu dla tego zbioru, tylko wykonać podobny, ale dla zbioru `Palmer Penguins`. Prosze więc pobrać odpowiedni plik z [folderu](https://uniwersytetslaski.sharepoint.com/:f:/s/Wizualizacjadanychwbadaniachnaukowych/Eop3O3X3-KFBtoSjlKF0LR0BGVncpCbGTph15KHM-3UMKA?e=YjiOeT) (folder `Dane` w `Materiały z zajęć` na Teams).
+
+```{r}
+library(palmerpenguins)
+```
+
+```{r read_data}
+irysy <- read.csv2("./data/iris.csv", header = TRUE, sep = ",", dec = ".")
+pngwn <- read.csv2("./data/penguins.csv", header = TRUE, sep = ",", dec = ".", na.strings = "NA")
+```
+
+```{r}
+pingwiny_bez_na <- na.omit(pngwn)
+```
+
+```{r irisSubsetting} 
+# subseting
+setosa <- subset(irysy, irysy$Species == "Iris-setosa")
+versicolor <- subset(irysy, irysy$Species == "Iris-versicolor")
+virginica <- subset(irysy, irysy$Species == "Iris-virginica")
+```
+
+```{r saveData}
+# You can provide full/absolute/relative path.
+# You need \\ (two) backslashes in path "C:\\Users\\User_name\\Desktop\\data.csv"
+# Now it is just file in working directory
+write.csv(virginica, "virg_iris.csv", row.names = TRUE)
+
+# getwd(), setwd() to show/set working directory
+```
+
+# Czym dysponujemy
+```{r plot-line-types}
+# Line types
+#++++++++++++++++++++++++++++++++++++++++++++
+generateRLineTypes <- function() {
+  oldPar <- par()
+  par(font = 2, mar = c(0, 0, 0, 0))
+  plot(1, pch = "", ylim = c(0, 6), xlim = c(0, 0.7), axes = FALSE, xlab = "", ylab = "")
+  for (i in 0:6) lines(c(0.3, 0.7), c(i, i), lty = i, lwd = 3)
+  text(rep(0.1, 6), 0:6, labels = c(
+    "0.'blank'", "1.'solid'", "2.'dashed'", "3.'dotted'",
+    "4.'dotdash'", "5.'longdash'", "6.'twodash'"
+  ))
+  par(mar = oldPar$mar, font = oldPar$font)
+}
+generateRLineTypes()
+```
+
+```{r chart-symbols}
+#++++++++++++++++++++++++++++++++++++++++++++
+# generate a plot of point shapes which R knows about.
+#++++++++++++++++++++++++++++++++++++++++++++
+generateRPointShapes <- function() {
+  oldPar <- par()
+  par(font = 2, mar = c(0.5, 0, 0, 0))
+  y <- rev(c(rep(1, 6), rep(2, 5), rep(3, 5), rep(4, 5), rep(5, 5)))
+  x <- c(rep(1:5, 5), 6)
+  plot(x, y,
+    pch = 0:25, cex = 1.5, ylim = c(1, 5.5), xlim = c(1, 6.5),
+    axes = FALSE, xlab = "", ylab = "", bg = "blue"
+  )
+  text(x, y, labels = 0:25, pos = 3)
+  par(mar = oldPar$mar, font = oldPar$font)
+}
+generateRPointShapes()
+```
+
+## Dwie serie danych
+``` {r two-species measurement}
+# look at data - column names
+# head(setosa)
+id <- c(1:50)
+x_range <- range(id)
+y_range <- range(setosa$SepalWidthCm, versicolor$SepalWidthCm)
+
+plot(setosa$Id, setosa$SepalWidthCm, col = "green", type = "l", xlab = "Id", ylab = "Sepal Width", xlim = x_range, ylim = y_range)
+lines(setosa$Id, versicolor$SepalWidthCm, col = "magenta", type = "l")
+
+legend("topright", legend = c("Setosa", "Versicolor"), col = c("green", "magenta"), lty = 1, lwd = 1)
+```
+
+Wykres rozrzutu - sprawdzenie zależności między dwoma parametrami
+```{r scatter}
+pairs(~ SepalLengthCm + SepalWidthCm,
+  data = setosa,
+  main = "Scatterplot Matrix"
+)
+```
+Można tak jeśli chcemy zmienić opisy
+```{r descriptionPairs}
+sSL <- setosa$SepalLengthCm
+sSW <- setosa$SepalWidthCm
+pairs(~ sSL + sSW,
+  data = setosa,
+  main = "Scatterplot Matrix"
+)
+```
+A jak zobaczyć porówanie wartości dla różnych gatunków?
+``` {r pairplot}
+pairs(irysy[, 2:5], pch = 21, bg = c("red", "green3", "blue")[unclass(iris$Species)], main = "Iris Data")
+```
+
+## Wykresy gęstości i histogramy
+Te wykresy mogą być używane do oceny rozkładu danych
+
+```{r density}
+plot(density(irysy$SepalLengthCm))
+```
+
+```{r}
+plot(density(irysy$PetalLengthCm))
+```
+
+
+Można je połączyć z histogramem
+```{r densityHist}
+hist(irysy$PetalLengthCm,
+  col = "peachpuff",
+  border = "black",
+  prob = TRUE, # densities instead of frequencies
+)
+lines(density(irysy$PetalLengthCm),
+  lwd = 2, # thickness of line
+  col = "chocolate2"
+)
+```
+
+## Wykresy pudełkowe
+
+```{r boxplot0}
+boxplot(irysy$SepalLengthCm)
+boxplot(irysy[, 2:5], col = "brown")
+```
+Można je trochę zmodyfikować.
+```{r boxplot}
+boxplot(irysy$PetalLengthCm, col = "skyblue")
+```
+
+A gdy ich potrzeba kilka:
+
+```{r boxplots}
+boxplot(irysy$PetalLengthCm ~ irysy$Species, col = c("red", "orange", "yellow"))
+boxplot(irysy$SepalLengthCm ~ irysy$Species, col = c("red", "orange", "yellow"))
+# legend("right", legend = c("Setosa", "Versicolor", "Virginica"), col = c("red", "orange", "yellow"), lty = 1, lwd = 1)
+
+# ~ oznacza policz mi boxploty odnośnie parametru sepallength ze zbioru irysy i zestaw mi je wg gatunku
+# dwa słowniki na raz?
+```
+
+To wartości uśrednione i nic nam nie dają, lepiej byłoby móc porównać jak się to ma w obrębie gatunków.
+```{r}
+boxplot(SepalLengthCm ~ Species, data = irysy)
+```
+Minusem jest to, że trzeba wykonac osobne wykresy dla każdego numerycznego parametru.
+To nie jest jeszcze do porównania.
+A jakby je tak poustawiać obok...
+
+## Zestawy wykresów
+```{r two_plots}
+par(mfrow = c(1, 2))
+# 1 wiersz, 2 kolumny
+
+hist(irysy$SepalLengthCm)
+plot(irysy$SepalLengthCm ~ irysy$PetalLengthCm, col = c("magenta", "blue"), pch = 16)
+```
+
+```{r four_plots}
+par(mfrow = c(2, 2))
+# 1 wiersz, 2 kolumny
+
+hist(irysy$SepalLengthCm,
+  col = "peachpuff",
+  border = "black",
+  prob = TRUE,
+)
+lines(density(irysy$SepalLengthCm),
+      lwd = 2,
+      col = 'brown')
+
+hist(irysy$PetalLengthCm,
+  col = "peachpuff",
+  border = "black",
+  prob = TRUE,
+)
+lines(density(irysy$PetalLengthCm))
+
+hist(irysy$SepalWidthCm,
+  col = "peachpuff",
+  border = "black",
+  prob = TRUE,
+)
+lines(density(irysy$SepalWidthCm))
+
+hist(irysy$PetalWidthCm,
+  main = "Petal Width",
+  col = "peachpuff",
+  border = "black",
+  prob = TRUE,
+)
+lines(density(irysy$PetalWidthCm))
+```
+
+```{r two_plotsss}
+par(mfrow = c(1, 2))
+# 1 wiersz, 2 kolumny
+
+hist(irysy$SepalLengthCm)
+plot(irysy$SepalLengthCm ~ irysy$PetalLengthCm, col = c("magenta", "blue"), pch = 16)
+```
+
+Spróbujmy zestawic obok siebie wykresy pudełkowe. Potrzebujemy 4 wykresy pod rząd.
+
+```{r cmpBoxplots0, fig.height=6, fig.width=13}
+par(mfrow = c(1, 4))
+# 1 wiersz, 4 kolumny
+
+boxplot(SepalLengthCm ~ Species, data = irysy, names = c("set", "ver", "vir"))
+boxplot(SepalWidthCm ~ Species, data = irysy, names = c("set", "ver", "vir"))
+boxplot(PetalLengthCm ~ Species, data = irysy, names = c("set", "ver", "vir"))
+boxplot(SepalWidthCm ~ Species, data = irysy, names = c("set", "ver", "vir"))
+```
+
+Może jednak lepiej będzie porówanć osobno długości, a osobno szerokości. Zróbmy wykres 2x2
+```{r cmpBoxplots, fig.height=8, fig.width=8}
+par(mfrow = c(2, 2), mar = c(2, 2, 0.5, 0.5), family="serif")
+# 1 wiersz, 4 kolumny
+
+boxplot(SepalLengthCm ~ Species, data = irysy)
+boxplot(PetalLengthCm ~ Species, data = irysy)
+boxplot(SepalWidthCm ~ Species, data = irysy)
+boxplot(PetalWidthCm ~ Species, data = irysy)
+```
+Wykresy pudełkowe można obrócić. Co wyjdzie?
+
+```{r cmpBoxplots1, fig.height=10, fig.width=10}
+par(mfrow = c(2, 2), mar = c(3, 3, 0.8, 0.8))
+# 1 wiersz, 4 kolumny
+# cex - wlk fonta
+# par(cex=0.3, mai=c(0.23,0.23,0.23,0.23))
+boxplot(SepalLengthCm ~ Species, data = irysy, horizontal = TRUE)
+boxplot(PetalLengthCm ~ Species, data = irysy, horizontal = TRUE)
+boxplot(SepalWidthCm ~ Species, data = irysy, names = c("set", "ver", "vir"))
+boxplot(PetalWidthCm ~ Species, data = irysy, boxwex = 0.5)
+```
+
+Wiedząc, że wykres pudełkowy może zafałszować obraz rozkładu danych, można stworzyć kombinację wykresów:
+```{r scatter-box, message=FALSE, warning=FALSE}
+# adapted from https://rgraphgallery.blogspot.com/search/label/combination%20plot
+
+par(fig = c(0, 0.8, 0, 0.8), new = TRUE)
+plot(setosa$SepalLengthCm, setosa$PetalLengthCm, xlab = "SL", ylab = "PL", pch = 21)
+
+# first boxplot, in margin.
+par(fig = c(0, 0.8, 0.55, 1), new = TRUE)
+boxplot(setosa$SepalLengthCm, horizontal = TRUE, col = "cyan", axes = FALSE)
+
+# second boxplot, in margin
+par(fig = c(0.65, 1, 0, 0.8), new = TRUE)
+boxplot(setosa$PetalLengthCm, col = "orange", axes = FALSE)
+
+# Title to entire plot
+mtext("wykres rozrzutu i pudełkowe na marginesach", side = 3, outer = TRUE, line = -2)
+```
+
+
+## Korelacje i korelogram
+
+```{r tab_corr_iris}
+korelacje <- round(cor(versicolor[, 2:5]), 2)
+
+knitr::kable(korelacje,
+  caption = "Tabela korelacji dla zmiennych liczbowych w zbiorze iris"
+)
+```
+
+```{r}
+kor_s <- round(cor(setosa[ , 2:5]), 2)
+kor_versi <- round(cor(versicolor[ , 2:5]), 2)
+```
+
+
+Tablica korelacji
+
+
+Korrelogram pozwala na przedstawienie korelacji w sposób wizualny
+Może wyglądac tak
+```{r}
+library(ellipse)
+plotcorr(cor(versicolor[, 2:5]))
+```
+Ale może i tak:
+```{r}
+library(corrplot)
+
+# correlation matrix
+# kor <- cor(irysy[, 2:5])
+
+# visualizing correlogram
+# as circle
+corrplot(kor_versi, method = "circle")
+# as pie
+corrplot(kor_versi, method = "pie")
+# as colour
+corrplot(kor_versi, method = "color")
+# as number
+corrplot(kor_versi, method = "number")
+
+corrplot(kor_versi, method = "ellipse", order = "AOE", type = "upper")
+
+corrplot(kor, order = 'AOE')
+```
+```{r}
+M = cor(mtcars)
+corrplot(M, order = 'AOE') # after 'AOE' reorder
+```
+
+
+Albo tak 
+```{r}
+# install.packages("corrgram")
+library(corrgram)
+
+# wygenerowanie korelogramu dla zbioru danych iris
+corrgram(versicolor[ , 2:5], order = TRUE, lower.panel = panel.shade, upper.panel = panel.ellipse)
+```
+albo tak:
+```{r}
+corrgram(versicolor[ , 2:5],
+  order = TRUE, lower.panel = panel.shade,
+  upper.panel = panel.pie, text.panel = panel.txt,
+  main = "A to jest tytuł"
+)
+```
+i jeszcze tak:
+```{r}
+corrgram(irysy,
+  order = TRUE, lower.panel = panel.ellipse,
+  upper.panel = panel.pts, text.panel = panel.txt,
+  diag.panel = panel.minmax,
+  main = "Tytuł"
+)
+```
+
+```{r}
+corrgram(setosa[ ,2:5],
+  order = TRUE, lower.panel = panel.ellipse,
+  upper.panel = panel.pts, text.panel = panel.txt,
+  diag.panel = panel.minmax,
+  main = "Tytuł"
+)
+```
+
+Albo i tak
+```{r}
+corrgram(irysy,
+  order = NULL, lower.panel = panel.shade,
+  upper.panel = NULL, text.panel = panel.txt,
+  main = "tytuł"
+)
+```
+
+# Lektura uzupełniająca
+
+1. [Ten guidelines for effective data visualization in scientific publications](https://www.sciencedirect.com/science/article/pii/S1364815210003270)
+2. [RColorBrewerIntro](https://www.geeksforgeeks.org/introduction-to-color-palettes-in-r-with-rcolorbrewer/)
+3. [Visualize correlation matrix using correlogram in R Programming](https://www.geeksforgeeks.org/visualize-correlation-matrix-using-correlogram-in-r-programming/)
+4. [https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html)

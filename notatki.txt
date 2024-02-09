@@ -1,0 +1,5 @@
+pl slownik
+uzupelnianie zmiennych
+tinytex (wersja R 4.2.3)
+focus tekstu
+ekwiwalent blacka?
